@@ -1,0 +1,33 @@
+services:
+  algod:
+    build:
+        context: .
+        dockerfile: Algod.Dockerfile
+    environment:
+      - ADMIN_TOKEN=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      - TOKEN=aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+      - NETWORK=mainnet
+    ports:
+      - "8080:8080"
+    volumes:
+      - '.data/algod:/algod/data'
+  conduit:
+    build: .
+    ports:
+      - "8981:8981"
+    depends_on:
+      - postgres
+      - algod
+  postgres:
+    image: postgres
+    restart: always
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: conduit
+      POSTGRES_USER: conduit
+      POSTGRES_DB: conduit
+    volumes:
+      - '.data/postgres:/var/lib/postgresql/data'
+volumes:
+  postgres:

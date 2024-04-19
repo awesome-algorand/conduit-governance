@@ -1,0 +1,5 @@
+{
+  "EndpointAddress": "0.0.0.0:8080",
+  "NodeExporterPath": "/node/bin/node_exporter",
+  "EnableFollowMode": true
+}

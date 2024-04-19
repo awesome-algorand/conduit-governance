@@ -1,0 +1,82 @@
+# Log verbosity: PANIC, FATAL, ERROR, WARN, INFO, DEBUG, TRACE
+log-level: INFO
+
+# If no log file is provided logs are written to stdout.
+#log-file:
+
+# Number of retries to perform after a pipeline plugin error.
+# Set to 0 to retry forever.
+retry-count: 10
+
+# Time duration to wait between retry attempts.
+retry-delay: "1s"
+
+# Optional filepath to use for pidfile.
+#pid-filepath: /path/to/pidfile
+
+# Whether or not to print the conduit banner on startup.
+hide-banner: false
+
+# When the address is not empty information is available on '/health'
+api:
+    addr: ":8981"
+
+# When enabled prometheus metrics are available on '/metrics'
+metrics:
+    mode: OFF
+    addr: ":9999"
+    prefix: "conduit"
+
+# The importer is typically an algod follower node.
+importer:
+    name: algod
+    config:
+        # The mode of operation, either "archival" or "follower".
+        # * follower mode allows you to use a lightweight non-archival node as the
+        #   data source. In addition, it will provide ledger state delta objects to
+        #   the processors and exporter.
+        # * archival mode allows you to start processing on any round but does not
+        #   contain the ledger state delta objects required for the postgres writer.
+        mode: "follower"
+
+        # Algod API address.
+        netaddr: "http://algod:8080"
+
+        # Algod API token. Found in the algod.token file.
+        token: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+
+        # Algod catchpoint catchup arguments
+        catchup-config:
+            # Algod Admin API Token. Used for running fast catchup during startup
+            # if the node needs to be initialized. Found in algod.admin.token file.
+            admin-token: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+
+
+# Zero or more processors may be defined to manipulate what data
+# reaches the exporter.
+processors:
+
+# An exporter is defined to do something with the data.
+exporter:
+    name: postgresql
+    config:
+        # Pgsql connection string
+        # See https://github.com/jackc/pgconn for more details
+        connection-string: "host=postgres port=5432 user=conduit password=conduit dbname=conduit"
+
+        # Maximum connection number for connection pool
+        # This means the total number of active queries that can be running
+        # concurrently can never be more than this
+        max-conn: 20
+
+        # The delete task prunes old transactions according to its configuration.
+        # By default transactions are not deleted.
+        delete-task:
+            # Interval used to prune the data. The values can be -1 to run at startup,
+            # 0 to disable, or N to run every N rounds.
+            interval: 0
+
+            # Rounds to keep
+            rounds: 100000
+
+
