@@ -1,5 +1,6 @@
 {
   "EndpointAddress": "0.0.0.0:8080",
-  "NodeExporterPath": "/node/bin/node_exporter",
+  "CatchupParallelBlocks": 512,
+  "MaxAcctLookback": 64,
   "EnableFollowMode": true
 }
