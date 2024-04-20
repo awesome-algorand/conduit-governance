@@ -17,39 +17,35 @@ const addresses = [
 
 try {
     const data = yaml.load(fs.readFileSync('conduit.template.yml', 'utf8'))
-    data.processors = {
+    data.processors = [{
         name: 'filter_processor',
         config: {
             "search-inner": true,
             "omit-group-transactions": true,
-            filters: [
-                {
-                    any: addresses.map((address, i) => {
-                        return {
-                            all: [
-                                {
-                                    'tag': 'txn.rcv',
-                                    'expression-type': 'equal',
-                                    'expression': address
-                                },
-                                {
-                                    'tag': 'txn.type',
-                                    'expression-type': 'equal',
-                                    'expression': 'pay'
-                                },
-                                {
-                                    'tag': 'txn.note',
-                                    'expression-type': 'regex',
-                                    'expression': `af\/gov${i + 1}:j{*.*}`
-                                }
-                            ],
+            filters: addresses.map((address, i) => {
+                return {
+                    all: [
+                        {
+                            'tag': 'txn.rcv',
+                            'expression-type': 'equal',
+                            'expression': address
+                        },
+                        {
+                            'tag': 'txn.type',
+                            'expression-type': 'equal',
+                            'expression': 'pay'
+                        },
+                        {
+                            'tag': 'txn.note',
+                            'expression-type': 'regex',
+                            'expression': `af\/gov${i + 1}:j{*.*}`
                         }
-
-                    })
+                    ],
                 }
-            ]
+
+            })
         }
-    }
+    }]
     fs.writeFileSync('conduit.yml', yaml.dump(data))
 } catch (e) {
     console.log(e)
